@@ -1,4 +1,4 @@
-name: Sync master to main (excluding workflows)
+name: Sync master to main
 
 permissions:
   contents: write
@@ -23,18 +23,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Prepare main branch
+      - name: Fetch and switch to main
         run: |
-          git fetch origin main
+          git fetch origin
           git checkout -B main origin/main || git checkout -B main
 
-      - name: Copy files excluding workflows
+      - name: Clear working directory (exclude .git)
         run: |
-          rm -rf * .[^.]* || true  # 清除主目录下所有文件和隐藏文件
-          git checkout master -- .   # 重新从 master 拉出所有文件
-          rm -rf .github/workflows   # 删除 workflows 目录
+          find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+      - name: Restore content from master (excluding workflows)
+        run: |
+          git checkout master -- .
+          rm -rf .github/workflows
           git add .
-          git commit -m "Sync from master excluding workflows" || echo "Nothing to commit"
+          git commit -m "Sync master to main (excluding workflows)" || echo "Nothing to commit"
 
       - name: Push to main
         run: |
