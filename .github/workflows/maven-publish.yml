@@ -22,6 +22,9 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: List target contents
+        run: ls -R target
+        
       - name: Rename Jar with version
         run: |
           mkdir -p release
