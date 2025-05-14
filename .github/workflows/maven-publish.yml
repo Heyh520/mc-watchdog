@@ -24,11 +24,13 @@ jobs:
 
       - name: List target contents
         run: ls -R target
-        
-      - name: Rename Jar with version
+
+      - name: Find and Rename Jar
         run: |
           mkdir -p release
-          cp target/*.jar release/mc-watchdog-${{ github.run_id }}.jar
+          JAR=$(find target -maxdepth 1 -type f -name "mc-watchdog-*.jar" ! -name "original-*.jar" | head -n 1)
+          echo "✅ Found jar: $JAR"
+          cp "$JAR" "release/mc-watchdog-${{ github.run_id }}.jar"
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v1
