@@ -43,34 +43,18 @@ jobs:
 
       - name: Rename Jar with Version
         run: |
-          # 进入 target 目录并修改文件名
-          JAR=$(find target -maxdepth 1 -type f -name "mc-watchdog-*.jar" ! -name "original-*.jar" | head -n 1)
+          # 查找生成的 jar 文件并重命名
+          JAR=$(find target -maxdepth 1 -type f -name "mc-watchdog-*.jar" | head -n 1)
           echo "✅ Found jar: $JAR"
           cp "$JAR" "target/mc-watchdog-${{ env.VERSION }}.jar"
 
       - name: Create config instructions file
         run: |
-          # 直接创建 config_instructions.txt
           echo "### 修改 config.properties 文件" > target/config_instructions.txt
           echo "1. 修改 java.path 为 Java 安装路径。" >> target/config_instructions.txt
           echo "2. 修改 jar.name 为你的 Minecraft 服务器核心的 jar 文件名。" >> target/config_instructions.txt
           echo "3. 修改 working.dir 为你的服务器工作目录路径。" >> target/config_instructions.txt
           echo "4. 配置邮件地址，用于接收错误报告和状态更新。" >> target/config_instructions.txt
-
-      - name: Push to main branch
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-          
-          git fetch origin main
-          git checkout main
-          
-          # 复制构建产物和配置文件到 main 分支
-          cp target/* .
-
-          git add .
-          git commit -m "Release mc-watchdog ${{ env.VERSION }}: ${{ env.COMMIT_MESSAGE }}" || echo "No changes to commit"
-          git push origin main
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v1
