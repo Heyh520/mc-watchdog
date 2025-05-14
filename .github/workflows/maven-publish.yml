@@ -20,13 +20,18 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean package -DskipTests
 
-      - name: Release Jar
+      - name: Rename Jar with version
+        run: |
+          mkdir -p release
+          cp target/*.jar release/mc-watchdog-${{ github.run_id }}.jar
+
+      - name: Release to GitHub
         uses: softprops/action-gh-release@v1
         with:
           tag_name: release-${{ github.run_id }}
           name: Auto Release ${{ github.run_id }}
-          files: target/*.jar
+          files: release/mc-watchdog-${{ github.run_id }}.jar
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # 使用你添加的 PAT
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
