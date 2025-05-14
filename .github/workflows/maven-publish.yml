@@ -22,11 +22,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Create Release
+      - name: Release Jar
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ github.run_number }}
-          name: Auto Release v${{ github.run_number }}
+          tag_name: release-${{ github.run_id }}
+          name: Auto Release ${{ github.run_id }}
           files: target/*.jar
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # 使用你添加的 PAT
