@@ -39,11 +39,11 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "Latest commit message: $COMMIT_MESSAGE"
-          echo "COMMIT_MESSAGE=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          # 使用引号包裹，并转义特殊字符
+          echo "COMMIT_MESSAGE=\"$(echo $COMMIT_MESSAGE | sed 's/"/\\"/g')\"" >> $GITHUB_ENV
 
       - name: Rename Jar with Version
         run: |
-          # 查找生成的 jar 文件并重命名
           JAR=$(find target -maxdepth 1 -type f -name "mc-watchdog-*.jar" | head -n 1)
           echo "✅ Found jar: $JAR"
           cp "$JAR" "target/mc-watchdog-${{ env.VERSION }}.jar"
