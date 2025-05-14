@@ -31,6 +31,8 @@ public class Main {
     private static String javaPath;
     private static String jarName;
     private static String workingDir;
+    private static String formGmail;
+    private static String toGmail;
     private static final ScheduledExecutorService emailScheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r);
@@ -45,7 +47,8 @@ public class Main {
             javaPath = config.getProperty(env + ".java.path");
             jarName = config.getProperty(env + ".jar.name");
             workingDir = config.getProperty(env + ".working.dir");
-
+            formGmail=config.getProperty("formGmail");
+            toGmail=config.getProperty("toGmail");
         } catch (IOException e) {
             System.err.println("[Watchdog] 加载配置文件失败：" + e.getMessage());
             System.exit(1);
@@ -241,8 +244,8 @@ public class Main {
         task.setSelfFuture(future);
     }
     private static void sendEmail(String subject, String content) {
-        final String from =  "hyh2665802693@gmail.com";
-        final String to = "wjt18545583799@gmail.com ";
+        final String from = formGmail;
+        final String to = toGmail;
         //WJT final String password = "hvcd zoaa cfwi hklo".replace(" ", ""); // 授权码
         final String password = "powt gyuy bxnf gvyj".replace(" ", "");// 授权码
 
