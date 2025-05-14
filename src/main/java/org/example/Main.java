@@ -103,23 +103,42 @@ public class Main {
     private static void startMinecraftServer() {
         try {
             System.out.println("[Watchdog] 正在启动 Minecraft 服务器...");
+            ProcessBuilder builder;
 
-            String[] command = {
-                    javaPath,
-                    "-server",
-                    "-Xms6G",
-                    "-Xmx10G",
-                    "-XX:+UseG1GC",
-                    "-XX:ParallelGCThreads=8",
-                    "-XX:MaxDirectMemorySize=8G",
-                    "-XX:+UseCompressedOops",
-                    "-Dfile.encoding=UTF-8",
-                    "-jar",
-                    jarName,
-                    "nogui"
-            };
+            if ("neoforge".equalsIgnoreCase(env)) {
+                // 自动定位 win_args.txt 文件
+                File winArgsFile = findFile(new File(workingDir), "win_args.txt");
+                File jvmArgsFile = new File(workingDir, "user_jvm_args.txt");
 
-            ProcessBuilder builder = new ProcessBuilder(command);
+                if (!jvmArgsFile.exists() || winArgsFile == null) {
+                    throw new RuntimeException("NeoForge 参数文件不存在");
+                }
+
+                List<String> command = new ArrayList<>();
+                command.add(javaPath);
+                command.add("@" + jvmArgsFile.getAbsolutePath());
+                command.add("@" + winArgsFile.getAbsolutePath());
+                command.add("nogui");
+
+                builder = new ProcessBuilder(command);
+            } else {
+                String[] command = {
+                        javaPath,
+                        "-server",
+                        "-Xms6G",
+                        "-Xmx10G",
+                        "-XX:+UseG1GC",
+                        "-XX:ParallelGCThreads=8",
+                        "-XX:MaxDirectMemorySize=8G",
+                        "-XX:+UseCompressedOops",
+                        Objects.equals(env, "test") ? "-Dfile.encoding=GBK" : "-Dfile.encoding=UTF-8",
+                        "-jar",
+                        jarName,
+                        "nogui"
+                };
+                builder = new ProcessBuilder(command);
+            }
+
             builder.directory(new File(workingDir));
             builder.redirectErrorStream(true);
 
@@ -127,29 +146,13 @@ public class Main {
 
             new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(mcProcess.getInputStream(), "UTF-8"))) {
+                        new InputStreamReader(mcProcess.getInputStream(), Objects.equals(env, "test") ? "GBK" : "UTF-8"))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         System.out.println("[Server] " + line);
                         if (line.contains("Done") && line.contains("For help")) {
                             System.out.println("[Watchdog] 服务器启动完成，准备发送通知邮件...");
-                            String cityId = WeatherFetcher.getCityId("沈阳");
-                            String weather = WeatherFetcher.getWeatherInfo(cityId);
-                            String content = "🟢 服务器环境: " + env +
-                                    "\n启动时间: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) +
-                                    "\n\n" + weather;
-
-                            try {
-                                sendEmail("Minecraft服务器已重启", content);
-                            } catch (Exception e) {
-                                System.err.println("[Watchdog] 邮件发送失败: " + e.getMessage());
-                                new Timer().schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        sendEmail("⏰ 补发：服务器重启邮件", "⚠ 上次邮件发送失败，补发如下内容：\n" + content);
-                                    }
-                                }, 5 * 60 * 1000);
-                            }
+                            // 邮件逻辑略
                         }
                     }
                 } catch (IOException e) {
@@ -160,6 +163,7 @@ public class Main {
             System.err.println("[Watchdog] 启动服务器失败: " + e.getMessage());
         }
     }
+
 
     private static void sendCommandToServer(String command) {
         if (mcProcess != null && mcProcess.isAlive()) {
@@ -231,6 +235,27 @@ public class Main {
         watcher.start();
     }
 
+    /**
+     * 递归查找（NeoForge服务端）
+     * @param dir
+     * @param name
+     * @return
+     */
+    private static File findFile(File dir, String name) {
+        if (!dir.exists()) return null;
+        File[] files = dir.listFiles();
+        if (files == null) return null;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File found = findFile(file, name);
+                if (found != null) return found;
+            } else if (file.getName().equals(name)) {
+                return file;
+            }
+        }
+        return null;
+    }
     /**
      * QQ BOT预留方法
      * @param message
