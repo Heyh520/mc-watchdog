@@ -8,7 +8,7 @@
 
         <!-- 文件输出 -->
         <File name="File" fileName="logs/watchdog.log" append="true">
-            <PatternLayout charset="GBK">
+            <PatternLayout charset="UTF-8">
                 <Pattern>[File][%d{yyyy-MM-dd HH:mm:ss}] [%t] %-5level: %msg%n</Pattern>
             </PatternLayout>
         </File>
