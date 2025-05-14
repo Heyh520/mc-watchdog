@@ -311,7 +311,7 @@ public class Main {
      */
     private static void notifyViaTelegram(String message) {
         // TODO: 接入 Telegram Bot API（https://api.telegram.org）
-        // 需要配置 token + chat_id (预留接入)
+        // 需要配置 token + chat_id
         System.out.println("[Telegram] 通知: " + message);
     }
 
