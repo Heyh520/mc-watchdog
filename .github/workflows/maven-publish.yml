@@ -30,7 +30,23 @@ jobs:
       - name: Generate Version Number
         id: version
         run: |
-          VERSION=$(date +'%y.%m.%d.%H')
+          DATE=$(date +'%y.%m.%d.%H')  # 获取当前日期和小时
+          VERSION_FILE="version.txt"
+          
+          # 如果 version.txt 文件存在，则读取并递增版本号
+          if [ -f "$VERSION_FILE" ]; then
+            LAST_VERSION=$(cat $VERSION_FILE)
+            # 从最后一个版本号中提取出最后的数字（.1）
+            LAST_COUNT=$(echo $LAST_VERSION | sed 's/.*\.\([0-9]\)$/\1/')
+            NEW_COUNT=$((LAST_COUNT + 1))  # 递增版本号
+            VERSION="${DATE}.$NEW_COUNT"
+          else
+            # 否则，首次生成版本号
+            VERSION="${DATE}.1"
+          fi
+      
+          # 存储当前版本号以供下次使用
+          echo $VERSION > $VERSION_FILE
           echo "Generated version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
