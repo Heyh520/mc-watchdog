@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
+        <!-- 控制台输出 -->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%-5level] %msg%n" />
+            <PatternLayout charset="GBK" pattern="[Console][%d{HH:mm:ss}] [%t] %-5level: %msg%n" />
         </Console>
+
+        <!-- 文件输出 -->
+        <File name="File" fileName="logs/watchdog.log" append="true">
+            <PatternLayout charset="GBK">
+                <Pattern>[File][%d{yyyy-MM-dd HH:mm:ss}] [%t] %-5level: %msg%n</Pattern>
+            </PatternLayout>
+        </File>
     </Appenders>
 
     <Loggers>
         <Root level="info">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </Loggers>
 </Configuration>
