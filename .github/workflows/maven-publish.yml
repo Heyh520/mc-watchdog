@@ -25,18 +25,25 @@ jobs:
       - name: List target contents
         run: ls -R target
 
+      - name: Generate Version Number
+        id: version
+        run: |
+          VERSION=$(date +'%y.%m.%d.%H')
+          echo "Generated version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Find and Rename Jar
         run: |
           mkdir -p release
           JAR=$(find target -maxdepth 1 -type f -name "mc-watchdog-*.jar" ! -name "original-*.jar" | head -n 1)
           echo "✅ Found jar: $JAR"
-          cp "$JAR" "release/mc-watchdog-${{ github.run_id }}.jar"
+          cp "$JAR" "release/mc-watchdog-${{ env.VERSION }}.jar"
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: release-${{ github.run_id }}
-          name: Auto Release ${{ github.run_id }}
-          files: release/mc-watchdog-${{ github.run_id }}.jar
+          tag_name: release-${{ env.VERSION }}
+          name: Auto Release ${{ env.VERSION }}
+          files: release/mc-watchdog-${{ env.VERSION }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
