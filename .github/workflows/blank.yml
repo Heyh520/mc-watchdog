@@ -1,6 +1,8 @@
-name: Sync master to main
+name: Sync master to main (excluding workflows)
+
 permissions:
   contents: write
+
 on:
   push:
     branches:
@@ -9,6 +11,7 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout master
         uses: actions/checkout@v3
@@ -20,9 +23,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Prepare main branch
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main || git checkout -B main
+
+      - name: Copy files excluding workflows
+        run: |
+          rm -rf * .[^.]* || true  # 清除主目录下所有文件和隐藏文件
+          git checkout master -- .   # 重新从 master 拉出所有文件
+          rm -rf .github/workflows   # 删除 workflows 目录
+          git add .
+          git commit -m "Sync from master excluding workflows" || echo "Nothing to commit"
+
       - name: Push to main
         run: |
-          git fetch origin
-          git checkout -B main
-          git merge master --allow-unrelated-histories -m "Sync master to main"
           git push origin main --force
