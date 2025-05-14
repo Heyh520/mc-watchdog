@@ -25,4 +25,4 @@ jobs:
           git fetch origin
           git checkout -B main
           git merge master --allow-unrelated-histories -m "Sync master to main"
-          git push origin main
+          git push origin main --force
