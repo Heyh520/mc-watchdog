@@ -271,7 +271,8 @@ public class Main {
             Transport.send(message);
             logger.info("[Watchdog] 邮件已发送至 {}",to);
         } catch (MessagingException e) {
-            System.err.println("[Watchdog] 发送邮件失败: " + e.getMessage());
+            System.err.println("[Watchdog] 发送邮件失败: " + e.getMessage()+"下面是详细报错信息:");
+            e.getStackTrace();
         }
     }
     /**
