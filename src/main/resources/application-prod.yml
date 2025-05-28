@@ -1,0 +1,6 @@
+watchdog:
+  env: prod
+  java-path: "C:/Program Files/Java/jdk-17/bin/java.exe"
+  jar-name: mohist-1.20.1-95dd6ec.jar
+  working-dir: "E:/McBNS"
+  restart-time: "00:00"

@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: ${ENV:dev}          # 默认启用 dev，可在启动参数 --spring.profiles.active=prod 覆盖
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${watchdog.mail.from}     # 复用下面自定义键
+    password: ${watchdog.mail.app-password}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"
+
+watchdog:
+  #通用键（各 profile 共用）
+  mail:
+    from: hyh2665802693@gmail.com
+    to: wjt18545583799@gmail.com
+    app-password: powtgyuybxnfgvyj   # Gmail App-Password
