@@ -30,7 +30,7 @@ jobs:
       - name: Generate Version Number
         id: version
         run: |
-          DATE=$(date +'%y.%m.%d.%H')  # 获取当前日期和小时
+          DATE=$(TZ='Asia/Shanghai' date +'%y.%m.%d.%H')  # 获取当前日期和小时
           VERSION_FILE="version.txt"
           
           # 如果 version.txt 文件存在，则读取并递增版本号
