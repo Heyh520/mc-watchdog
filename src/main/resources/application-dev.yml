@@ -1,0 +1,6 @@
+watchdog:
+  env: dev
+  java-path: "C:/Program Files/Java/jdk-17/bin/java.exe"
+  jar-name: banner-1.20.1-780-server.jar
+  working-dir: "D:\\MCfwq"
+  restart-time: "05:30"    # dev 环境我看你原来想 9:33 重启

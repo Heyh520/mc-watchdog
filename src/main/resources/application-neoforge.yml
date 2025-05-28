@@ -1,0 +1,6 @@
+watchdog:
+  env: neoforge
+  java-path: "C:/Program Files/Java/jdk-21/bin/java.exe"
+  jar-name: fabric-server-launch.jar
+  working-dir: "E:/1.21.1NeoForge"
+  restart-time: "00:00"
