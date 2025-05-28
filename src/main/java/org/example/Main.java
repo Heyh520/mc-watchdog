@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -170,7 +171,7 @@ public class Main {
             intentionalShutdown = false;
             new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(mcProcess.getInputStream(), "UTF-8"))) {
+                        new InputStreamReader(mcProcess.getInputStream(),Charset.defaultCharset()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         System.out.println("[Server] " + line);
